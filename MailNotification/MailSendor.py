@@ -22,8 +22,8 @@ class MailSender(object):
     smtp_passwd = None
     smtp_address = None
     smtp_ssl = False
-    user_to = None
-    user_cc = None
+    user_to = list()
+    user_cc = list()
 
     def __init__(self):
         try:
@@ -43,6 +43,12 @@ class MailSender(object):
         self.user_to = [v.strip(' ') for v in self.user_to]
         self.user_cc = re.split('[,;]', self.user_cc)
         self.user_cc = [v.strip(' ') for v in self.user_cc]
+        if self.smtp_address == "":
+            start = self.smtp_server.find('.')
+            if start != -1:
+                self.smtp_address = self.smtp_user + '@' + self.smtp_server[start + 1:]
+
+        logger.debug('email sender address: %s.', self.smtp_address)
         logger.debug('user to send: %s;', self.user_to)
         logger.debug('user to copy: %s.', self.user_cc)
 
@@ -84,17 +90,20 @@ class MailSender(object):
             logger.error("parameter of message is not a valid email context.")
             return
 
+        if extra_to is not None and len(extra_to) > 0:
+            extra_to = [v.strip(' ') for v in extra_to]
+            self.user_to += extra_to
+
+        if extra_cc is not None and len(extra_cc) > 0:
+            extra_cc = [v.strip(' ') for v in extra_cc]
+            self.user_cc += extra_cc
+
+        if self.smtp_address == "" or len(self.user_to) == 0:
+            raise smtplib.SMTPDataError(0, "sender address or destination address is invalid.")
+
         self._connect()
 
         try:
-            if extra_to is not None and len(extra_to) > 0:
-                extra_to = [v.strip(' ') for v in extra_to]
-                self.user_to += extra_to
-
-            if extra_cc is not None and len(extra_cc) > 0:
-                extra_cc = [v.strip(' ') for v in extra_cc]
-                self.user_cc += extra_cc
-
             msg = email.mime.multipart.MIMEMultipart()
             msg['Subject'] = message['Subject']
             message['From'] = self.smtp_address
@@ -112,6 +121,8 @@ class MailSender(object):
 
     @staticmethod
     def create_text_message(title, body):
+        body += """
+Auto Send By Python Mail Notification"""
         msg = email.mime.text.MIMEText(body, 'plain')
         msg['Subject'] = email.header.Header(title)
 
