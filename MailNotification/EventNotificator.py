@@ -1,9 +1,14 @@
+import os
+import multiprocessing
+import platform
 import log
 import logging
 import event.EventSSH as ES
 import MailSender
 import threading
 import time
+import argparse
+
 
 logger = logging.getLogger("MailNotificator")
 
@@ -61,9 +66,53 @@ def trigger_event(threads):
         thread.join()
 
 
+def args_parser():
+
+    parser = argparse.ArgumentParser(description="This tool is used to trigger events. "
+                                                 "When event triggered, "
+                                                 "it will send email to notice specified persons.")
+    parser.add_argument("-t", "--time_interval", type=int, help="set to specified default time interval of "
+                                                                "Event trigger, unit is second.")
+    parser.add_argument('-d', '--daemon', action='store_true')
+    args = parser.parse_args()
+    logger.info("%s", args)
+    if args.time_interval is not None:
+        global time_interval
+        time_interval = args.time_interval
+
+    return args
+
+
+def test(threads):
+    time.sleep(2)
+    logger.info("process: event %s", threads)
+
+
 def main():
+    args = args_parser()
     threads = init_thread()
-    trigger_event(threads)
+    # TODO: test code
+    if args.daemon:
+        is_win = platform.platform().lower().find("windows")
+        is_linux = platform.platform().lower().find("linux")
+        if is_win == 0:
+            process = multiprocessing.Process(target=test, args=(threads,))
+            process.daemon = True
+            process.start()
+            logger.info("process: start")
+            process.join()
+        elif is_linux == 0:
+            pid = os.fork()
+            if pid > 0:
+                logger.info("end")
+                exit(0)
+            else:
+                time.sleep(2)
+                logger.info("sleep end")
+
+    else:
+        trigger_event(threads)
+        pass
 
 
 if __name__ == "__main__":
