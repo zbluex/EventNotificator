@@ -70,37 +70,37 @@ def args_parser():
 
     parser = argparse.ArgumentParser(description="This tool is used to trigger events. "
                                                  "When event triggered, "
-                                                 "it will send email to notice specified persons.")
+                                                 "it will send email to notice specified persons.",
+                                     epilog="Author: zbluex@gmail.com")
     parser.add_argument("-t", "--time_interval", type=int, help="set to specified default time interval of "
                                                                 "Event trigger, unit is second.")
-    parser.add_argument('-d', '--daemon', action='store_true')
+    parser.add_argument('-d', '--daemon', action='store_true', help='set program run as a daemon.')
+    parser.add_argument('-l', '--logfile', type=file, help='specified log file path.')
     args = parser.parse_args()
-    logger.info("%s", args)
+    logger.debug("%s", args)
     if args.time_interval is not None:
         global time_interval
         time_interval = args.time_interval
 
+    if args.logfile is not None:
+        pass
+
     return args
 
 
-def test(threads):
-    time.sleep(2)
-    logger.info("process: event %s", threads)
+def start_threads():
+    threads = init_thread()
+    trigger_event(threads)
 
 
 def main():
     args = args_parser()
-    threads = init_thread()
     # TODO: test code
     if args.daemon:
         is_win = platform.platform().lower().find("windows")
         is_linux = platform.platform().lower().find("linux")
         if is_win == 0:
-            process = multiprocessing.Process(target=test, args=(threads,))
-            process.daemon = True
-            process.start()
-            logger.info("process: start")
-            process.join()
+            pass
         elif is_linux == 0:
             pid = os.fork()
             if pid > 0:
@@ -111,8 +111,7 @@ def main():
                 logger.info("sleep end")
 
     else:
-        trigger_event(threads)
-        pass
+        start_threads()
 
 
 if __name__ == "__main__":
