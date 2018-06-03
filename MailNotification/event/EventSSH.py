@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 # -*- coding:utf-8 -*-
+import paramiko
 import EventBase
 import logging
 logger = logging.getLogger("EventSSH")
