@@ -89,7 +89,7 @@ class MailSender(object):
         """
 
         if not isinstance(message, email.message.Message):
-            logger.error("parameter of message is not a valid email context.")
+            logger.debug("parameter of message is not a valid email context.")
             raise smtplib.SMTPDataError(0, "parameter of message is not a valid email context.")
 
         if extra_to is not None and len(extra_to) > 0:
