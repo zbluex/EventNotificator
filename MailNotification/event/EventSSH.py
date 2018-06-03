@@ -30,6 +30,7 @@ class EventSSH(EventBase.EventBase):
         self._host = host
         self._port = port
         self._expect = expect
+        self.name = "Name(%s)--Cmd(%s)--Host(%s)" % (self.name, self._cmd, self._host)
 
     def pre_step(self):
         self._ssh = paramiko.SSHClient()
@@ -54,17 +55,21 @@ class EventSSH(EventBase.EventBase):
             return False
 
     def create_email_msg(self):
+        body = "cmd:\n%s\n" % self._cmd
+        body += "host:\n%s\n" % self._host
+        body += "user:\n%s\n" % self._user
+        title = "Event[%s]" % self.name
         if self.err_msg == "":
-            title = "Event[%s] " % self.name + "triggered"
-            body = "cmd:\n%(cmd)s\nresult:\n%(result)s\nexpect:\n%(expect)s\n" % \
-                   {"cmd": self._cmd, "result": self.ret_msg, "expect": self._expect}
+            title += " triggered"
+            body += "result:\n%(result)s\nexpect:\n%(expect)s\n" % \
+                   {"result": self.ret_msg, "expect": self._expect}
             if self.ret_msg == self._expect:
                 body += "result is equal to expect.\n"
             else:
                 body += "result is not equal to expect.\n"
         else:
-            title = "Event[%s] " % self.name + "Error Occur"
-            body = "cmd:\n%(cmd)s\nerror occur:\n%(err)s\n" % {"cmd": self._cmd, "err": self.err_msg}
+            title += " Error Occur"
+            body += "error occur:\n%(err)s\n" % {"err": self.err_msg}
         self.msg = MailSender.MailSender.create_text_message(title, body)
 
     def post_step(self):

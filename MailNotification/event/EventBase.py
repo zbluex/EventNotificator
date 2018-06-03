@@ -19,6 +19,7 @@ class EventBase(object):
     user_to = list()
     user_cc = list()
     re_trigger = False
+    time_interval = None
 
     def __init__(self, *args, **kwargs):
         self.name = self.__class__.__name__
@@ -29,6 +30,9 @@ class EventBase(object):
         if len(user_cc) > 0:
             self.user_cc = user_cc
         self.re_trigger = bool(kwargs.get("re_trigger", False))
+        time_interval = int(kwargs.get("time_interval", -1))
+        if time_interval >= 0:
+            self.time_interval = time_interval
 
 
     @abc.abstractmethod
