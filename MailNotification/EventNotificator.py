@@ -116,7 +116,7 @@ def main():
 
 if __name__ == "__main__":
     EventList = [
-        ES.EventSSH("date +%S", "30", "root", "123456", "127.0.0.1", time_interval=0),
+        ES.EventSSH("echo $(($(date +%S)>30))", "1", "root", "123456", "127.0.0.1", time_interval=0),
         ES.EventSSH("cat /etc/os-release |grep -i ^name=|cut -d'=' -f 2", "\"Ubuntu\"", "root", "123456", "127.0.0.1")
     ]
     main()

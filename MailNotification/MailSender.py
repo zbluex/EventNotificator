@@ -17,17 +17,13 @@ class MailSender(object):
     """
     Mail Sender class
     """
-    smtp_obj = None
-    smtp_server = None
-    smtp_port = None
-    smtp_user = None
-    smtp_passwd = None
-    smtp_address = None
-    smtp_ssl = False
-    user_to = list()
-    user_cc = list()
+    # TODO
+    smtp_mail_interval = 0
+    smtp_last_send_time = 0
 
     def __init__(self):
+        MailSender.smtp_mail_interval = 0
+        self.smtp_obj = None
         try:
             self.smtp_server = config.get('profile', 'smtp_server')
             self.smtp_port = config.get('profile', 'smtp_port')

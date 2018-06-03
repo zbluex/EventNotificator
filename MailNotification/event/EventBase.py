@@ -11,18 +11,18 @@ logger = logging.getLogger("EventBase")
 
 class EventBase(object):
     __metaclass__ = abc.ABCMeta
-    name = ""
-    err_msg = ""
-    ret_msg = ""
-    msg = None
-    attachment = list()
-    user_to = list()
-    user_cc = list()
-    re_trigger = False
-    time_interval = None
 
     def __init__(self, *args, **kwargs):
         self.name = self.__class__.__name__
+        self.err_msg = ""
+        self.ret_msg = ""
+        self.msg = None
+        self.attachment = list()
+        self.user_to = list()
+        self.user_cc = list()
+        self.re_trigger = False
+        self.time_interval = None
+
         user_to = kwargs.get("user_to", list())
         if len(user_to) > 0:
             self.user_to = user_to

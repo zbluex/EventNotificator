@@ -14,13 +14,6 @@ paramiko_logger.setLevel(logging.ERROR)
 
 
 class EventSSH(EventBase.EventBase):
-    _host = None
-    _port = None
-    _user = None
-    _passwd = None
-    _cmd = None
-    _ssh = None
-    _expect = None
 
     def __init__(self, cmd, expect, user, passwd, host, port=22, *args, **kwargs):
         super(EventSSH, self).__init__(*args, **kwargs)
@@ -30,6 +23,7 @@ class EventSSH(EventBase.EventBase):
         self._host = host
         self._port = port
         self._expect = expect
+        self._ssh = None
         self.name = "Name(%s)--Cmd(%s)--Host(%s)" % (self.name, self._cmd, self._host)
 
     def pre_step(self):
