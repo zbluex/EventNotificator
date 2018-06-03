@@ -9,15 +9,22 @@ logger = logging.getLogger("EventBase")
 
 class EventBase(object):
     __metaclass__ = abc.ABCMeta
-    name = None
-    errmsg = None
+    name = ""
+    errmsg = ""
+    ret_msg = ""
     msg = None
     attachment = list()
     user_to = list()
     user_cc = list()
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.name = self.__class__.__name__
+        user_to = kwargs.get("user_to", list())
+        if len(user_to) > 0:
+            self.user_to = user_to
+        user_cc = kwargs.get("user_cc", list())
+        if len(user_cc) > 0:
+            self.user_cc = user_cc
 
     @abc.abstractmethod
     def pre_step(self):

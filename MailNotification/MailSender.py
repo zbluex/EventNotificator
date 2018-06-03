@@ -1,14 +1,16 @@
 import ConfigParser
 import smtplib
 import re
-
-import email.mime.multipart, email.mime.text, email.header
-
+import os
+import email.mime.multipart
+import email.mime.text
+import email.header
 import logging, log
+
 logger = logging.getLogger("MailSendor")
 
 config = ConfigParser.ConfigParser()
-config.read('config.cfg')
+config.read(os.path.dirname(__file__) + '/config.cfg')
 
 
 class MailSender(object):
