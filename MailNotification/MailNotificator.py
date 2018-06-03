@@ -1,0 +1,60 @@
+import log
+import logging
+import event.EventSSH as ES
+import MailSender
+import threading
+import time
+
+logger = logging.getLogger("MailNotificator")
+
+
+def event_trigger(event):
+    is_happened = False
+    event.pre_step()
+    try:
+        is_happened = event.is_event_happened()
+        if is_happened:
+            event.create_email_msg()
+            ms = MailSender.MailSender()
+            ms.mail_send(event.msg, event.user_to, event.user_cc, event.attachment)
+    except Exception as e:
+        logger.error("error happened when trigger event[%s], error %s.", event.name, e)
+        is_happened = True
+        event.err_msg = e
+    finally:
+        event.post_step()
+    if is_happened:
+        if event.err_msg == "":
+            logger.info("Event[%s] trigger.", event.name)
+        if event.err_msg != "" or not event.re_trigger:
+            EventList.remove(event)
+
+
+def init_thread():
+    threads = list()
+    for event in EventList:
+        t = threading.Thread(target=event_trigger, args=(event,))
+        threads.append(t)
+    return threads
+
+
+def trigger_event(threads):
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+
+def main():
+    while len(EventList) > 0:
+        threads = init_thread()
+        trigger_event(threads)
+        time.sleep(10)
+
+
+if __name__ == "__main__":
+    EventList = [
+        ES.EventSSH("ls /root", "", "root", "123456", "127.0.0.1")
+    ]
+    main()

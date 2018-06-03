@@ -42,7 +42,7 @@ class EventSSH(EventBase.EventBase):
 
         err = stderr.read()
         if err != "":
-            self.err_msg = err
+            self.err_msg = err[0:-1]
             return True
 
         result = stdout.read()
@@ -54,8 +54,8 @@ class EventSSH(EventBase.EventBase):
             return False
 
     def create_email_msg(self):
-        title = "Event[%s] " % self.name + "triggered"
-        if self.err_msg != "":
+        if self.err_msg == "":
+            title = "Event[%s] " % self.name + "triggered"
             body = "cmd:\n%(cmd)s\nresult:\n%(result)s\nexpect:\n%(expect)s\n" % \
                    {"cmd": self._cmd, "result": self.ret_msg, "expect": self._expect}
             if self.ret_msg == self._expect:
@@ -63,6 +63,7 @@ class EventSSH(EventBase.EventBase):
             else:
                 body += "result is not equal to expect.\n"
         else:
+            title = "Event[%s] " % self.name + "Error Occur"
             body = "cmd:\n%(cmd)s\nerror occur:\n%(err)s\n" % {"cmd": self._cmd, "err": self.err_msg}
         self.msg = MailSender.MailSender.create_text_message(title, body)
 
