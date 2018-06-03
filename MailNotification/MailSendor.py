@@ -127,7 +127,3 @@ Auto Send By Python Mail Notification"""
         msg['Subject'] = email.header.Header(title)
 
         return msg
-
-
-ms = MailSender()
-ms.mail_send(ms.create_text_message('this is a test', 'body'))
