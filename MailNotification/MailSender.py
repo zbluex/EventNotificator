@@ -64,8 +64,10 @@ class MailSender(object):
         logger.debug("server %s, port %s", self.smtp_server, self.smtp_port)
         self.smtp_obj.connect(self.smtp_server, self.smtp_port)
         self.smtp_obj.ehlo()
-        if not self.smtp_ssl:
+        try:
             self.smtp_obj.starttls()
+        except smtplib.SMTPResponseException:
+            pass
         self.smtp_obj.login(self.smtp_user, self.smtp_passwd)
 
     def _disconnec(self):
@@ -88,7 +90,7 @@ class MailSender(object):
 
         if not isinstance(message, email.message.Message):
             logger.error("parameter of message is not a valid email context.")
-            return
+            raise smtplib.SMTPDataError(0, "parameter of message is not a valid email context.")
 
         if extra_to is not None and len(extra_to) > 0:
             extra_to = [v.strip(' ') for v in extra_to]
@@ -99,7 +101,7 @@ class MailSender(object):
             self.user_cc += extra_cc
 
         if self.smtp_address == "" or len(self.user_to) == 0:
-            raise smtplib.SMTPDataError(0, "sender address or destination address is invalid.")
+            raise smtplib.SMTPDataError(1, "sender address or destination address is invalid.")
 
         self._connect()
 
