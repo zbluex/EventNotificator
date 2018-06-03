@@ -1,8 +1,8 @@
 import unittest
 import EventSSH
+import email
 import sys, os
 sys.path.append("..")
-import MailSender
 
 
 class EventSSHTest(unittest.TestCase):
@@ -12,10 +12,14 @@ class EventSSHTest(unittest.TestCase):
         exec ls /root, expect result is ""
         :return:
         """
-        ES = EventSSH.EventSSH("cat /etc/os-release |grep -i ^name=|cut -d'=' -f 2", "\"Ubuntu\"", "root", "123456", "127.0.0.1")
-        ES.pre_step()
-        is_happened = ES.is_event_happened()
-        self.assertTrue(is_happened)
-        ES.create_email_msg()
-        ms = MailSender.MailSender()
-        ms.mail_send(ES.msg, ES.user_to, ES.user_cc, ES.attachment)
+        es = EventSSH.EventSSH("cat /etc/os-release |grep -i ^name=|cut -d'=' -f 2", "\"Ubuntu\"", "root", "123456", "127.0.0.1")
+        es.pre_step()
+        try:
+            is_happened = es.is_event_happened()
+            self.assertTrue(is_happened)
+            self.assertEqual(es.err_msg, "")
+            es.create_email_msg()
+            self.assertIsInstance(es.msg, email.message.Message)
+            self.assertTrue(es.ret_msg == "\"Ubuntu\"")
+        finally:
+            es.post_step()

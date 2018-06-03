@@ -2,15 +2,17 @@
 # -*- coding:utf-8 -*-
 import abc
 import sys
+import logging
 sys.path.append('..')
-import log, logging
+import log
+
 logger = logging.getLogger("EventBase")
 
 
 class EventBase(object):
     __metaclass__ = abc.ABCMeta
     name = ""
-    errmsg = ""
+    err_msg = ""
     ret_msg = ""
     msg = None
     attachment = list()

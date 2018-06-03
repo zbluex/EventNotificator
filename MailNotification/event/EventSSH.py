@@ -6,7 +6,9 @@ import logging
 import sys
 sys.path.append('..')
 import MailSender
+
 logger = logging.getLogger("EventSSH")
+# cancel paramiko log print
 paramiko_logger = logging.getLogger("paramiko.transport")
 paramiko_logger.setLevel(logging.ERROR)
 
@@ -40,7 +42,7 @@ class EventSSH(EventBase.EventBase):
 
         err = stderr.read()
         if err != "":
-            self.errmsg = err
+            self.err_msg = err
             return True
 
         result = stdout.read()
@@ -53,12 +55,15 @@ class EventSSH(EventBase.EventBase):
 
     def create_email_msg(self):
         title = "Event[%s] " % self.name + "triggered"
-        body = "cmd:\n%(cmd)s\nresult:\n%(result)s\nexpect:\n%(expect)s\n" % \
-               {"cmd": self._cmd, "result": self.ret_msg, "expect": self._expect}
-        if self.ret_msg == self._expect:
-            body += "result is equal to expect.\n"
+        if self.err_msg != "":
+            body = "cmd:\n%(cmd)s\nresult:\n%(result)s\nexpect:\n%(expect)s\n" % \
+                   {"cmd": self._cmd, "result": self.ret_msg, "expect": self._expect}
+            if self.ret_msg == self._expect:
+                body += "result is equal to expect.\n"
+            else:
+                body += "result is not equal to expect.\n"
         else:
-            body += "result is not equal to expect.\n"
+            body = "cmd:\n%(cmd)s\nerror occur:\n%(err)s\n" % {"cmd": self._cmd, "err": self.err_msg}
         self.msg = MailSender.MailSender.create_text_message(title, body)
 
     def post_step(self):
