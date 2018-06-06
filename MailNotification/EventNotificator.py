@@ -1,5 +1,5 @@
 import os
-import multiprocessing
+import sys
 import platform
 import log
 import logging
@@ -14,6 +14,7 @@ logger = logging.getLogger("MailNotificator")
 
 # global variable
 time_interval = None
+
 
 def event_trigger(event):
     """
@@ -100,23 +101,21 @@ def main():
         is_win = platform.platform().lower().find("windows")
         is_linux = platform.platform().lower().find("linux")
         if is_win == 0:
-            pass
+            logger.info("-d --daemon in Windows is not Supported. "
+                        "Running in frontend.")
+            start_threads()
         elif is_linux == 0:
             pid = os.fork()
             if pid > 0:
-                logger.info("end")
                 exit(0)
             else:
-                time.sleep(2)
-                logger.info("sleep end")
-
+                start_threads()
     else:
         start_threads()
 
 
 if __name__ == "__main__":
     EventList = [
-        ES.EventSSH("echo $(($(date +%S)>30))", "1", "root", "123456", "127.0.0.1", time_interval=0),
-        ES.EventSSH("cat /etc/os-release |grep -i ^name=|cut -d'=' -f 2", "\"Ubuntu\"", "root", "123456", "127.0.0.1")
+        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "", "root", "Huawei12#$", "192.168.140.218", time_interval=60)
     ]
     main()
