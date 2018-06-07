@@ -69,14 +69,19 @@ def trigger_event(threads):
 
 def args_parser():
 
-    parser = argparse.ArgumentParser(description="This tool is used to trigger events. "
-                                                 "When event triggered, "
-                                                 "it will send email to notice specified persons.",
-                                     epilog="Author: zbluex@gmail.com")
-    parser.add_argument("-t", "--time_interval", type=int, help="set to specified default time interval of "
-                                                                "Event trigger, unit is second.")
-    parser.add_argument('-d', '--daemon', action='store_true', help='set program run as a daemon.')
-    parser.add_argument('-l', '--logfile', type=file, help='specified log file path.')
+    parser = argparse.ArgumentParser(
+        description="This tool is used to trigger events. When event "
+                    "triggered, it will send email "
+                    "to notice specified persons.",
+        epilog="Author: zhuqi1@huawei.com")
+    parser.add_argument("-t", "--time_interval", type=int,
+                        help="set to specified default time interval of "
+                             "Event trigger, unit is second.")
+    parser.add_argument('-d', '--daemon', action='store_true',
+                        help='set program run as a daemon. '
+                             'Only support linux.')
+    parser.add_argument('-l', '--logfile', type=file,
+                        help='specified log file path.')
     args = parser.parse_args()
     logger.debug("%s", args)
     if args.time_interval is not None:
