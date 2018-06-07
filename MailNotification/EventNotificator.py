@@ -1,9 +1,8 @@
 import os
-import sys
 import platform
 import log
 import logging
-import event.EventSSH as ES
+from EventList import EventList
 import MailSender
 import threading
 import time
@@ -18,12 +17,13 @@ time_interval = None
 
 def event_trigger(event):
     """
-    event trigger function. trigger event information, judge whether is happened.
-    trigger time interval get from event.time_trigger, global variable time_trigger or 60 seconds.
+    event trigger function. trigger event information, judge whether
+    is happened.
+    trigger time interval get from event.time_trigger, global variable
+    time_trigger or 60 seconds.
     :param event: object init from class EventBase
     :return: None
     """
-    is_happened = False
     while True:
         event.pre_step()
         try:
@@ -120,9 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    EventList = [
-        ES.EventSSH('cat /etc/os-release |grep "^NAME="', 'NAME="Red Hat Enterprise Linux Server"',
-                    "root", "password", "127.0.0.1",
-                    time_interval=60)
-    ]
     main()
