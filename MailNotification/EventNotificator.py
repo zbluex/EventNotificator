@@ -73,7 +73,7 @@ def args_parser():
         description="This tool is used to trigger events. When event "
                     "triggered, it will send email "
                     "to notice specified persons.",
-        epilog="Author: zhuqi1@huawei.com")
+        epilog="Author: zbluex@gmail.com")
     parser.add_argument("-t", "--time_interval", type=int,
                         help="set to specified default time interval of "
                              "Event trigger, unit is second.")
@@ -121,9 +121,8 @@ def main():
 
 if __name__ == "__main__":
     EventList = [
-        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "",
-                    "root", "Huawei12#$", "192.168.140.218",
-                    extra_cmd=["date", ],
+        ES.EventSSH('cat /etc/os-release |grep "^NAME="', 'NAME="Red Hat Enterprise Linux Server"',
+                    "root", "password", "127.0.0.1",
                     time_interval=60)
     ]
     main()
