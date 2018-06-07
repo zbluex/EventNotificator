@@ -18,7 +18,7 @@
     smtp_user           #登录smtp的账户
     smtp_passwd         #登录密码
     smtp_email_address  #用于显示发件人
-    smtp_ssl            #是否启用ssl 
+    smtp_ssl            #是否启用ssl, True of False
     
 *[DEFAULT]*
 

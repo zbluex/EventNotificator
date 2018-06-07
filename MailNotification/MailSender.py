@@ -44,7 +44,8 @@ class MailSender(object):
         if self.smtp_address == "":
             start = self.smtp_server.find('.')
             if start != -1:
-                self.smtp_address = self.smtp_user + '@' + self.smtp_server[start + 1:]
+                self.smtp_address = self.smtp_user + '@' + \
+                                    self.smtp_server[start + 1:]
 
         logger.debug('email sender address: %s.', self.smtp_address)
         logger.debug('user to send: %s;', self.user_to)
@@ -88,7 +89,8 @@ class MailSender(object):
 
         if not isinstance(message, email.message.Message):
             logger.debug("parameter of message is not a valid email context.")
-            raise smtplib.SMTPDataError(0, "parameter of message is not a valid email context.")
+            raise smtplib.SMTPDataError(
+                0, "parameter of message is not a valid email context.")
 
         if extra_to is not None and len(extra_to) > 0:
             extra_to = [v.strip(' ') for v in extra_to]
@@ -99,7 +101,8 @@ class MailSender(object):
             self.user_cc += extra_cc
 
         if self.smtp_address == "" or len(self.user_to) == 0:
-            raise smtplib.SMTPDataError(1, "sender address or destination address is invalid.")
+            raise smtplib.SMTPDataError(
+                1, "sender address or destination address is invalid.")
 
         self._connect()
 
