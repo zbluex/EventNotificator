@@ -116,6 +116,9 @@ def main():
 
 if __name__ == "__main__":
     EventList = [
-        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "", "root", "Huawei12#$", "192.168.140.218", time_interval=60)
+        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "",
+                    "root", "Huawei12#$", "192.168.140.218",
+                    extra_cmd=["date", ],
+                    time_interval=60)
     ]
     main()

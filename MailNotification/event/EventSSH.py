@@ -25,6 +25,7 @@ class EventSSH(EventBase.EventBase):
         self._expect = expect
         self._ssh = None
         self.name = "Name(%s)--Cmd(%s)--Host(%s)" % (self.name, self._cmd, self._host)
+        self._extra_cmd = kwargs.get("extra_cmd", None)
 
     def pre_step(self):
         self._ssh = paramiko.SSHClient()
@@ -48,6 +49,23 @@ class EventSSH(EventBase.EventBase):
         else:
             return False
 
+    def _create_attachment_msg(self):
+        if self._extra_cmd is None:
+            return
+
+        for cmd in self._extra_cmd:
+            msg_str = ""
+            _, stdout, stderr = self._ssh.exec_command(cmd)
+            ret = stdout.read()
+            if ret != "":
+                msg_str += "stdout:\n" + ret
+            ret = stderr.read()
+            if ret != "":
+                msg_str += "stderr:\n" + ret
+            if msg_str != "":
+                msg = MailSender.MailSender.create_text_message(cmd, msg_str)
+                self.attachment.append(msg)
+
     def create_email_msg(self):
         body = "cmd:\n%s\n" % self._cmd
         body += "host:\n%s\n" % self._host
@@ -65,6 +83,7 @@ class EventSSH(EventBase.EventBase):
             title += " Error Occur"
             body += "error occur:\n%(err)s\n" % {"err": self.err_msg}
         self.msg = MailSender.MailSender.create_text_message(title, body)
+        self._create_attachment_msg()
 
     def post_step(self):
         self._ssh.close()

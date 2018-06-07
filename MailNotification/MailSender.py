@@ -106,16 +106,20 @@ class MailSender(object):
         try:
             msg = email.mime.multipart.MIMEMultipart()
             msg['Subject'] = message['Subject']
-            message['From'] = self.smtp_address
-            message['To'] = ','.join(self.user_to)
-            message['Cc'] = ','.join(self.user_cc)
+            msg['From'] = self.smtp_address
+            msg['To'] = email.utils.COMMASPACE.join(self.user_to)
+            msg['Cc'] = email.utils.COMMASPACE.join(self.user_cc)
             users = self.user_to + self.user_cc
             msg.attach(message)
 
             for attachment in attach:
+                mtype = attachment.get('type', "txt")
+                mcmd = attachment.get('title', "cmd")
+                attachment.add_header('Content-Disposition', 'attachment',
+                                      filename=mcmd + '.' + mtype)
                 msg.attach(attachment)
 
-            self.smtp_obj.sendmail(self.smtp_address, users, message.as_string())
+            self.smtp_obj.sendmail(self.smtp_address, users, msg.as_string())
         finally:
             self._disconnec()
 
@@ -125,5 +129,8 @@ class MailSender(object):
 Auto Send By Python Mail Notification"""
         msg = email.mime.text.MIMEText(body, 'plain')
         msg['Subject'] = email.header.Header(title)
+        msg['title'] = title
+        msg['type'] = "txt"
+
 
         return msg
