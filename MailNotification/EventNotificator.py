@@ -1,18 +1,16 @@
 import os
 import platform
+from log import logger
 import log
-import logging
 from EventList import EventList
 import MailSender
 import threading
 import time
 import argparse
 
-
-logger = logging.getLogger("MailNotificator")
-
 # global variable
 time_interval = None
+log_filepath = None
 
 
 def event_trigger(event):
@@ -77,10 +75,7 @@ def args_parser():
     parser.add_argument("-t", "--time_interval", type=int,
                         help="set to specified default time interval of "
                              "Event trigger, unit is second.")
-    parser.add_argument('-d', '--daemon', action='store_true',
-                        help='set program run as a daemon. '
-                             'Only support linux.')
-    parser.add_argument('-l', '--logfile', type=file,
+    parser.add_argument('-l', '--logfile', type=str,
                         help='specified log file path.')
     args = parser.parse_args()
     logger.debug("%s", args)
@@ -89,7 +84,14 @@ def args_parser():
         time_interval = args.time_interval
 
     if args.logfile is not None:
-        pass
+        _path = os.getcwd() + os.path.sep + args.logfile
+        _dir_path = os.path.dirname(_path)
+        if not os.path.exists(_dir_path):
+            logger.error("dirpath(%s) is not exist.", _dir_path)
+            exit(1)
+        global log_filepath
+        log_filepath = _path
+        log.set_log_filepath(log_filepath)
 
     return args
 
@@ -101,22 +103,12 @@ def start_threads():
 
 def main():
     args = args_parser()
-    # TODO: test code
-    if args.daemon:
-        is_win = platform.platform().lower().find("windows")
-        is_linux = platform.platform().lower().find("linux")
-        if is_win == 0:
-            logger.info("-d --daemon in Windows is not Supported. "
-                        "Running in frontend.")
-            start_threads()
-        elif is_linux == 0:
-            pid = os.fork()
-            if pid > 0:
-                exit(0)
-            else:
-                start_threads()
-    else:
-        start_threads()
+
+    logger.info("Start trigger Event:")
+    for event in EventList:
+        logger.info("%s", event.name)
+
+    start_threads()
 
 
 if __name__ == "__main__":

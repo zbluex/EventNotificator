@@ -1,7 +1,10 @@
-import event.EventSSH as ES
+from event import EventSSH
 
 EventList = [
-        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "",
-                    "root", "Huawei12#$", "192.168.140.218",
-                    time_interval=5)
+        EventSSH.EventSSH('cat /etc/os-release |grep "^NAME="', 'NAME="SLES"',
+                          "root", "password", "127.0.0.1",
+                          time_interval=5,
+                          extra_cmd=['data',],
+                          user_to=['demo@gmail.com',],
+                          user_cc=['demo@gmail.com',]),
     ]

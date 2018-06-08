@@ -5,9 +5,7 @@ import os
 import email.mime.multipart
 import email.mime.text
 import email.header
-import logging, log
-
-logger = logging.getLogger("MailSendor")
+from log import logger
 
 config = ConfigParser.ConfigParser()
 config.read(os.path.dirname(__file__) + '/config.cfg')
@@ -134,6 +132,5 @@ Auto Send By Python Mail Notification"""
         msg['Subject'] = email.header.Header(title)
         msg['title'] = title
         msg['type'] = "txt"
-
 
         return msg

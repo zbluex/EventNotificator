@@ -27,8 +27,8 @@
     
 ## 二、使用说明
     python EventNotificator.py -h
-    usage: EventNotificator.py [-h] [-t TIME_INTERVAL] [-d] [-l LOGFILE]
-
+    usage: EventNotificator.py [-h] [-t TIME_INTERVAL] [-l LOGFILE]
+    
     This tool is used to trigger events. When event triggered, it will send email
     to notice specified persons.
     
@@ -37,7 +37,6 @@
       -t TIME_INTERVAL, --time_interval TIME_INTERVAL
                             set to specified default time interval of Event
                             trigger, unit is second.
-      -d, --daemon          set program run as a daemon. Only support linux.
       -l LOGFILE, --logfile LOGFILE
                             specified log file path.
     
@@ -49,13 +48,16 @@
 
 实例实例如下所示：
 
-    if __name__ == "__main__":
+    from event import EventSSH
+    
     EventList = [
-        ES.EventSSH("ps -ef |grep loop_test.sh|grep -v grep", "",
-                    "root", "password", "192.168.140.218",
-                    time_interval=60)
+            EventSSH.EventSSH('cat /etc/os-release |grep "^NAME="', 'NAME="SLES"',
+                              "root", "password", "127.0.0.1",
+                              time_interval=5,
+                              extra_cmd=['data',],
+                              user_to=['demo@gmail.com',],
+                              user_cc=['demo@gmail.com',]),
     ]
-    main()
 以上初始化了一个EventSSH实例，该实例执行"ps -ef |grep loop_test.sh|grep -v grep"命令，并且期望获得""的结果，如果期望发生，则利用邮件通知用户。后面跟的参数分别为ssh连接的用户名、密码、ip、端口等，更多的事件实例后续会进行介绍。
 
 ### 2、EventSSH

@@ -2,15 +2,11 @@
 # -*- coding:utf-8 -*-
 import paramiko
 import EventBase
-import logging
 import sys
+
 sys.path.append('..')
 import MailSender
-
-logger = logging.getLogger("EventSSH")
-# cancel paramiko log print
-paramiko_logger = logging.getLogger("paramiko.transport")
-paramiko_logger.setLevel(logging.ERROR)
+from log import logger
 
 
 class EventSSH(EventBase.EventBase):

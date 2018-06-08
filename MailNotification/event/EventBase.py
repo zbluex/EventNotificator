@@ -4,9 +4,7 @@ import abc
 import sys
 import logging
 sys.path.append('..')
-import log
-
-logger = logging.getLogger("EventBase")
+from log import logger
 
 
 class EventBase(object):
