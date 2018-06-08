@@ -10,7 +10,10 @@ from log import logger
 
 
 class EventSSH(EventBase.EventBase):
-
+    """
+    EventSSH Event can connect to a host via ssh protocol, execute cmd,
+    and compare result with expect.
+    """
     def __init__(self, cmd, expect, user, passwd, host, port=22, *args, **kwargs):
         super(EventSSH, self).__init__(*args, **kwargs)
         self._cmd = cmd

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 import os
 import platform
 from log import logger
@@ -11,6 +13,7 @@ import argparse
 # global variable
 time_interval = None
 log_filepath = None
+dry_run = False
 
 
 def event_trigger(event):
@@ -28,8 +31,9 @@ def event_trigger(event):
             is_happened = event.is_event_happened()
             if is_happened:
                 event.create_email_msg()
-                ms = MailSender.MailSender()
-                ms.mail_send(event.msg, event.user_to, event.user_cc, event.attachment)
+                if dry_run is False:
+                    ms = MailSender.MailSender()
+                    ms.mail_send(event.msg, event.user_to, event.user_cc, event.attachment)
         except Exception as e:
             logger.error("error happened when trigger event[%s], error %s.", event.name, e)
             is_happened = True
@@ -77,6 +81,8 @@ def args_parser():
                              "Event trigger, unit is second.")
     parser.add_argument('-l', '--logfile', type=str,
                         help='specified log file path.')
+    parser.add_argument('-d', '--dry_run', action='store_true',
+                        help='set dry run mode which will not send email.')
     args = parser.parse_args()
     logger.debug("%s", args)
     if args.time_interval is not None:
@@ -92,6 +98,11 @@ def args_parser():
         global log_filepath
         log_filepath = _path
         log.set_log_filepath(log_filepath)
+
+    if args.dry_run is True:
+        global dry_run
+        dry_run = args.dry_run
+        logger.info("Dry run mode.")
 
     return args
 
