@@ -58,7 +58,7 @@
                               user_to=['demo@gmail.com',],
                               user_cc=['demo@gmail.com',]),
     ]
-以上初始化了一个EventSSH实例，该实例执行"ps -ef |grep loop_test.sh|grep -v grep"命令，并且期望获得""的结果，如果期望发生，则利用邮件通知用户。后面跟的参数分别为ssh连接的用户名、密码、ip、端口等，更多的事件实例后续会进行介绍。
+以上初始化了一个EventSSH实例，该实例执行'cat /etc/os-release |grep "^NAME="'命令，并且期望获得'NAME="SLES"'的结果，如果期望发生，则利用邮件通知用户。后面跟的参数分别为ssh连接的用户名、密码、ip、端口等，更多的事件实例后续会进行介绍。
 
 ### 2、EventSSH
 该实例是一个SSH监听实例，利用ssh协议连接到指定节点执行指定命令，获取结果与期望值进行匹配，如果匹配成功，则发送邮件进行通知。
